@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.danielfreitassc.backend.dtos.ProductDTO;
+import com.danielfreitassc.backend.dtos.ProductResponseDTO;
 import com.danielfreitassc.backend.mappers.ProductMapper;
+import com.danielfreitassc.backend.mappers.ProductResponseMapper;
 import com.danielfreitassc.backend.models.ProductEntity;
 import com.danielfreitassc.backend.repositories.ProductRepository;
 
@@ -19,33 +21,34 @@ import lombok.RequiredArgsConstructor;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ProductResponseMapper productResponseMapper;
 
-    public ProductDTO create(ProductDTO productDTO) {
-        return productMapper.toDto(productRepository.save(productMapper.toEntity(productDTO)));
+    public ProductResponseDTO create(ProductDTO productDTO) {
+        return productResponseMapper.toDto(productRepository.save(productMapper.toEntity(productDTO)));
     }
 
-    public List<ProductDTO> getList() {
-        return productRepository.findAll().stream().map(productMapper::toDto).toList();
+    public List<ProductResponseDTO> getList() {
+        return productRepository.findAll().stream().map(productResponseMapper::toDto).toList();
     }
 
-    public ProductDTO getById(Long id) {
+    public ProductResponseDTO getById(Long id) {
         Optional<ProductEntity> product = productRepository.findById(id);
         if(product.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Nenhum produto com este ID");
-        return productMapper.toDto(product.get());
+        return productResponseMapper.toDto(product.get());
     }
 
-    public ProductDTO update(Long id, ProductDTO productDTO) {
+    public ProductResponseDTO update(Long id, ProductDTO productDTO) {
         Optional<ProductEntity> product = productRepository.findById(id);
         if(product.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Nenhum produto com este ID");
         ProductEntity productEntity = productMapper.toEntity(productDTO);
         productEntity.setId(id);
-        return productMapper.toDto(productRepository.save(productEntity));
+        return productResponseMapper.toDto(productRepository.save(productEntity));
     }
 
-    public ProductDTO delete(Long id) {
+    public ProductResponseDTO delete(Long id) {
         Optional<ProductEntity> product = productRepository.findById(id);
         if(product.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Nenhum produto com este ID");
         productRepository.delete(product.get());
-        return productMapper.toDto(product.get());
+        return productResponseMapper.toDto(product.get());
     }
 }
